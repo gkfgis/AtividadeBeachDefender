@@ -1,0 +1,62 @@
+1.Visao Geral
+O cliente (Ryan)  deseja que seja desenvolvido um jogo de farming(clicker,ele confundiu os termos) chamado "Beach Defender" onde o jogador é um bartender que precisa defender seu quiosque na praia contra Pokémon hostis que estão espantando seus clientes, utilizando cliques para causar dano nos invasores, evoluindo seu próprio Pokémon com melhorias e poções temporárias para recuperar o movimento do seu estabelecimento.
+
+2. Tela Inicial
+A tela de boas-vindas do jogo apresentara um cenário de praia como plano de fundo. No centro da tela, o título "BEACH DEFENDER" é exibido de forma destacada.
+Dois botões principais permitem a navegação:
+•	JOGAR: inicia a experiência do jogo, levando o jogador para a tela principal
+•	SAIR: encerra a aplicação.
+3. Tela Principal (Do jogo)
+Área de Poções (Lado Esquerdo)
+No lado esquerdo da tela, os jogadores têm acesso a três tipos de poções com efeitos temporários:
+Poção da Sorte
+•	Aumenta significativamente a chance de acerto crítico (2x mais chance)
+•	Temporizador visível mostra o tempo restante do efeito
+•	Botão de compra de poção
+Poção da Força
+•	Dobra o dano causado por cada clique
+•	Temporizador com contagem regressiva visível
+•	Botão de compra de poção
+Poção da Fortuna
+•	Duplica a quantidade de dinheiro recebida ao derrotar inimigos
+•	Temporizador indicando duração do efeito
+•	Botão de compra de poção
+Área Central - Combate
+•	Nome do adversário exibido no topo da tela
+•	Barra de vida do inimigo atual visível abaixo do nome, muda de cor conforme ela abaixa ( verde , amarela, vermelha)
+•	Imagem do pokemon do usuario(Squirtle) a direita.
+•	Ordem dos inimigos: Kingler  Sharpedo  Gyarados
+Loja (Parte Inferior)
+A loja oferece melhorias permanentes para o jogador:
+Doce Raro
+•	Evolui o Pokémon e aumenta o dano base progressivamente
+•	Pode ser comprado até 3 vezes (dano: 5 → 10 → 20 → 30) (5 sendo o dano inicial)
+Rede de Pesca
+•	Causa 40 pontos de dano instantâneo no inimigo atual
+•	Item de uso único por compra
+Coco
+•	Adiciona um ataque automático periódico
+•	O coco ataca automaticamente a cada X segundos (valor a definir)
+Botão Ajuda
+•	Acessa o menu (popup) de explicações sobre itens e mecânicas
+Dinheiro
+•	Mostra quanto de dinheiro o jogador tem no momento.
+4. Menu de Ajuda (POPUP)
+Janela pop-up com explicações:
+Poção da Sorte: "A poção da sorte faz você ter 2x mais chance crítica"
+Poção da Força: "A poção de força faz você dar 2x mais dano"
+Poção da Fortuna: "A poção de fortuna faz você ganhar 2x mais dinheiro"
+Doce Raro: "Melhora o dano do seu Pokémon (dano do hit), pode ser comprado no máximo 3 vezes"
+Coco: "Melhora o dano do hit de coco, o hit do coco acontece periodicamente a cada X segundos"
+Rede: "Causa 40 de dano instantâneo"
+Botao de fechar: Fecha o POPUP
+5. Elementos Visuais
+•	Ícones para cada tipo de poção
+•	Imagem do Doce Raro
+•	Imagem do Coco
+•	Imagem da Rede de Pesca
+•	Imagem Pokémon do jogador (Squirtle)
+•	Imagens dos adversários (Kingler, Sharpedo, Gyarados)
+•	Imagem do mega bracelete
+
+OBS:Todos os valores e tempos ainda estao sendo finalizados para mantes um balanciamenteo 
