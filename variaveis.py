@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 
+
 def inicializar_variaveis():
     # Criar janela principal
     root = Tk()

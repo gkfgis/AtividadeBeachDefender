@@ -17,3 +17,4 @@ def criar_menu(frm, root):
     exit_button.pack(pady=10)
     
     return play_button 
+    
