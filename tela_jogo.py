@@ -18,14 +18,14 @@ def criar_tela_jogo():
 
     bg_img = PhotoImage(file=bg_image_path)
     bg_label = Label(jogo_window, image=bg_img)
-    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    bg_label.place(x=0, y=0)
 
     # ======== NOME DO ADVERSÁRIO ========
     adversario_label = Label(jogo_window, text="KINGLER", font=("Verdana", 16, "bold"), bg="white")
     adversario_label.place(x=400, y=20, anchor="n")
 
     # ======== BARRA DE VIDA ========
-    vida_canvas = Canvas(jogo_window, width=300, height=20, bg="white", highlightthickness=1, highlightbackground="#aaa")
+    vida_canvas = Canvas(jogo_window, width=300, height=5, bg="white", highlightthickness=1, highlightbackground="#aaa")
     vida_canvas.place(x=400, y=60, anchor="n")
     vida_barra = vida_canvas.create_rectangle(0, 0, 300, 20, fill="green")
 
@@ -175,19 +175,16 @@ def criar_tela_jogo():
         
         # Nome do item
         Label(item_frame, text=nome, bg="#f8d26d", font=("Verdana", 9, "bold")).pack()
-        
-        # Preço
-        Label(item_frame, text=f"R${preco}", bg="#f8d26d", font=("Verdana", 9)).pack()
-        
+                
         # Botão de compra
         if comando:
-            Button(item_frame, text="Comprar", bg=cor, font=("Verdana", 8), 
-                   command=comando, width=8).pack(pady=2)
+            Button(item_frame, text=f"R${preco}", bg=cor, font=("Verdana", 8), 
+                   command=comando, width=8).pack()
 
     criar_item("Doce Raro", 200, "lightgreen", lambda: print("Comprou Doce Raro"), 0)
     criar_item("Rede", 2000, "lightgreen", lambda: print("Comprou Rede"), 1)
     criar_item("Coco", 400, "lightgreen", lambda: print("Comprou Coco"), 2)
-    criar_item("Mega Bracelete", "0,99", "lightblue", None, 3)
+    criar_item("Mega Bracelete", "0,99", "lightblue", lambda: print("Comprou o bracelete"), 3)
 
     # ======== BOTÃO AJUDA ========
     ajuda_frame = Frame(itens_container, bg="#f8d26d", width=120, height=70)
