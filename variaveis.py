@@ -1,6 +1,5 @@
 from tkinter import *
-from tkinter import ttk
-
+import os
 
 def inicializar_variaveis():
     # Criar janela principal
@@ -9,8 +8,17 @@ def inicializar_variaveis():
     root.resizable(width=False, height=False)
     root.geometry("400x300")
     
-    # Criar frame principal
-    frm = ttk.Frame(root, padding=20)
-    frm.pack(expand=True, fill=BOTH)
+    # Carregar imagem
+    bg_photo = None
+    image_path = "imgs/imag.png"
     
-    return root, frm
+    if os.path.exists(image_path):
+        try:
+            bg_photo = PhotoImage(file=image_path)
+            print(f"Imagem carregada com sucesso: {image_path}")
+        except Exception as e:
+            print(f"Erro ao carregar {image_path}: {e}")
+    else:
+        print(f"Arquivo não encontrado: {image_path}")
+    
+    return root, bg_photo
