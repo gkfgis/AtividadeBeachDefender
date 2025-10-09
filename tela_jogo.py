@@ -67,19 +67,32 @@ def criar_tela_jogo():
         {"nome": "GYARADOS", "vida_max": 250, "vida_atual": 250, "imagem": "imgs/gyarados.png", "dinheiro_min": 100, "dinheiro_max": 200, "subsample_x": 3, "subsample_y": 2}
     ]
     inimigo_atual = 0
-    dano_jogador = 5
+    dano_jogador = [5,10,20,35,60]
     dinheiro = 0
-
+    dano_atual = 0
+    valor_doce = [100,200,300]  # Só 3 níveis para Doce Raro
+    mega_bracelete_comprado = False
+    mega_bracelete_disponivel = False
+    
     # ======== IMAGEM DO INIMIGO (CENTRO) ========
     inimigo_label = Label(jogo_window, bg="#ffffff", cursor="hand2")
     inimigo_label.place(x=400, y=300, anchor="center")
 
     def trocar_inimigo():
-        nonlocal inimigo_atual
+        nonlocal inimigo_atual, mega_bracelete_disponivel
+        
         if inimigo_atual < len(inimigos) - 1:
             inimigo_atual += 1
         else:
             inimigo_atual = 0
+            
+            # Verificar se derrotou o Gyarados e tem todos os doces comprados
+            if dano_atual >= 3 and not mega_bracelete_comprado:
+                # 15% de chance de dropar o Mega Bracelete
+                if random.random() <= 0.15:
+                    mega_bracelete_disponivel = True
+                    mega_bracelete_button.config(state="normal")
+                    print("🎉 Mega Bracelete disponível para compra!")
         
         inimigos[inimigo_atual]["vida_atual"] = inimigos[inimigo_atual]["vida_max"]
         adversario_label.config(text=inimigos[inimigo_atual]["nome"])
@@ -98,11 +111,11 @@ def criar_tela_jogo():
         except Exception as e:
             print(f"Erro ao carregar imagem: {e}")
             inimigo_label.config(text="[CLIQUE AQUI PARA ATACAR]", font=("Verdana", 10))
-
+    
     def atacar_inimigo():
         nonlocal dinheiro
         
-        inimigos[inimigo_atual]["vida_atual"] -= dano_jogador
+        inimigos[inimigo_atual]["vida_atual"] -= dano_jogador[dano_atual]
         vida_atual = inimigos[inimigo_atual]["vida_atual"]
         vida_max = inimigos[inimigo_atual]["vida_max"]
         
@@ -140,7 +153,8 @@ def criar_tela_jogo():
     Label(info_bg, text="DINHEIRO", font=("Verdana", 10, "bold"), bg="#f0f0f0").pack()
     dinheiro_label = Label(info_bg, text="R$ 0", font=("Verdana", 12, "bold"), bg="gold")
     dinheiro_label.pack(pady=5)
-    Label(info_bg, text=f"DANO: {dano_jogador}", font=("Verdana", 9), bg="#f0f0f0").pack(pady=5)
+    dano_label = Label(info_bg, text=f"DANO: {dano_jogador[dano_atual]}", font=("Verdana", 9), bg="#f0f0f0")
+    dano_label.pack(pady=5)
     inimigo_info_label = Label(info_bg, text="INIMIGO: 1/3", font=("Verdana", 9), bg="#f0f0f0")
     inimigo_info_label.pack(pady=5)
 
@@ -164,8 +178,51 @@ def criar_tela_jogo():
     # Container para os itens da loja
     itens_container = Frame(loja_bg, bg="#f8d26d")
     itens_container.pack(expand=True)
+    
+    # Variáveis para os botões
+    doce_rarro_button = None
+    mega_bracelete_button = None
+    
+    def comprarDoceRaro():
+        nonlocal dinheiro, dano_atual
+        
+        if dano_atual < len(valor_doce) and dinheiro >= valor_doce[dano_atual]:
+            dinheiro -= valor_doce[dano_atual]
+            dano_atual += 1
+            
+            # Atualizar displays
+            dinheiro_label.config(text=f"R$ {dinheiro}")
+            dano_label.config(text=f"DANO: {dano_jogador[dano_atual]}")
+            
+            if dano_atual < len(valor_doce):
+                doce_rarro_button.config(text=f"R${valor_doce[dano_atual]}")
+                print(f"Doce Raro comprado! Dano aumentou para {dano_jogador[dano_atual]}")
+            else:
+                doce_rarro_button.config(text="MAX", state="disabled")
+                print("Doce Raro máximo alcançado! Derrote Gyarados para chance de Mega Bracelete")
+        else:
+            print("Dinheiro insuficiente ou upgrade máximo alcançado")
+
+    def comprarMegaBracelete():
+        nonlocal dinheiro, dano_atual, mega_bracelete_comprado
+        
+        if mega_bracelete_disponivel and dinheiro >= 1000 and not mega_bracelete_comprado:
+            dinheiro -= 1000
+            mega_bracelete_comprado = True
+            dano_atual = 4  # Ativa o nível 4 de dano (35)
+            
+            # Atualizar displays
+            dinheiro_label.config(text=f"R$ {dinheiro}")
+            dano_label.config(text=f"DANO: {dano_jogador[dano_atual]}")
+            mega_bracelete_button.config(text="COMPRADO", state="disabled")
+            
+            print("🎉 Mega Bracelete comprado! Dano máximo alcançado: 35")
+        else:
+            print("Mega Bracelete não disponível, dinheiro insuficiente ou já comprado")
 
     def criar_item(nome, preco, cor, comando, x_offset):
+        nonlocal doce_rarro_button, mega_bracelete_button
+        
         item_frame = Frame(itens_container, bg="#f8d26d", width=120, height=70)
         item_frame.pack(side=LEFT, padx=15)
         item_frame.pack_propagate(False)
@@ -178,13 +235,31 @@ def criar_tela_jogo():
                 
         # Botão de compra
         if comando:
-            Button(item_frame, text=f"R${preco}", bg=cor, font=("Verdana", 8), 
-                   command=comando, width=8).pack()
+            if nome == "Doce Raro":
+                # Para o Doce Raro, usar o preço atual baseado no dano_atual
+                if dano_atual < len(valor_doce):
+                    preco_atual = valor_doce[dano_atual]
+                    doce_rarro_button = Button(item_frame, text=f"R${preco_atual}", bg=cor, font=("Verdana", 8), 
+                           command=comprarDoceRaro, width=8)
+                else:
+                    doce_rarro_button = Button(item_frame, text="MAX", bg=cor, font=("Verdana", 8), 
+                           state="disabled", width=8)
+                doce_rarro_button.pack()
+                
+            elif nome == "Mega Bracelete":
+                # Mega Bracelete começa desabilitado
+                mega_bracelete_button = Button(item_frame, text="R$1000", bg=cor, font=("Verdana", 8), 
+                       command=comprarMegaBracelete, width=8, state="disabled")
+                mega_bracelete_button.pack()
+                
+            else:
+                Button(item_frame, text=f"R${preco}", bg=cor, font=("Verdana", 8), 
+                       command=comando, width=8).pack()
 
-    criar_item("Doce Raro", 200, "lightgreen", lambda: print("Comprou Doce Raro"), 0)
+    criar_item("Doce Raro", 200, "lightgreen", comprarDoceRaro, 0)
     criar_item("Rede", 2000, "lightgreen", lambda: print("Comprou Rede"), 1)
     criar_item("Coco", 400, "lightgreen", lambda: print("Comprou Coco"), 2)
-    criar_item("Mega Bracelete", "0,99", "lightblue", lambda: print("Comprou o bracelete"), 3)
+    criar_item("Mega Bracelete", "0,99", "lightblue", comprarMegaBracelete, 3)
 
     # ======== BOTÃO AJUDA ========
     ajuda_frame = Frame(itens_container, bg="#f8d26d", width=120, height=70)
@@ -210,13 +285,15 @@ Poções:
 - Poção da Força: +2x dano nos ataques
 - Poção da Fortuna: +2x dinheiro ganho
 
-Mega Bracelete:
-- Use para evoluir seu Pokémon.
-- Cada compra custa R$0,99.
+Sistema de Upgrades:
+- Doce Raro: Compre 3 vezes para aumentar dano (5→10→20)
+- Mega Bracelete: Desbloqueado após comprar 3 Doces Raros
+  e derrotar Gyarados (15% de chance)
+- Mega Bracelete custa R$1000 e aumenta dano para 35
 
 Objetivo:
 - Derrote todos os inimigos (Kingler → Sharpedo → Gyarados).
-- Utilize poções e o Mega Bracelete estrategicamente para vencer.
+- Utilize poções e upgrades estrategicamente para vencer.
 
 Recompensas:
 - Kingler: R$73-100
