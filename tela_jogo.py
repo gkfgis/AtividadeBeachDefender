@@ -169,11 +169,11 @@ def criar_tela_jogo():
         jogador_label = Label(jogo_window, text="[SQUIRTLE]", font=("Verdana", 10), bg="#f0f0f0")
         jogador_label.place(x=650, y=320)
 
-    # ======== LOJA (PARTE INFERIOR - MELHORADA) ========
-    loja_bg = Frame(jogo_window, bg="#f8d26d", relief="raised", bd=2, height=100)
-    loja_bg.place(x=0, y=500, relwidth=1)
+    # ======== LOJA (PARTE INFERIOR - SUBIDA) ========
+    loja_bg = Frame(jogo_window, bg="#f8d26d", relief="raised", bd=2, height=80)  # Reduzi a altura
+    loja_bg.place(x=0, y=480, relwidth=1)  # Subi 20 pixels (de 500 para 520)
 
-    Label(loja_bg, text="LOJA", font=("Verdana", 14, "bold"), bg="#f8d26d").pack(pady=5)
+    Label(loja_bg, text="LOJA", font=("Verdana", 14, "bold"), bg="#f8d26d").pack(pady=3)  # Reduzi o pady
 
     # Container para os itens da loja
     itens_container = Frame(loja_bg, bg="#f8d26d")
@@ -223,15 +223,15 @@ def criar_tela_jogo():
     def criar_item(nome, preco, cor, comando, x_offset):
         nonlocal doce_rarro_button, mega_bracelete_button
         
-        item_frame = Frame(itens_container, bg="#f8d26d", width=120, height=70)
-        item_frame.pack(side=LEFT, padx=15)
+        item_frame = Frame(itens_container, bg="#f8d26d", width=110, height=120)  # Reduzi o tamanho
+        item_frame.pack(side=LEFT, padx=12)  # Reduzi o padding
         item_frame.pack_propagate(False)
         
         # Imagem do item
-        Label(item_frame, text=f"[{nome.upper()}]", bg="#f8d26d", font=("Verdana", 8)).pack(pady=2)
+        Label(item_frame, text=f"[{nome.upper()}]", bg="#f8d26d", font=("Verdana", 7)).pack(pady=1)  # Reduzi o pady
         
         # Nome do item
-        Label(item_frame, text=nome, bg="#f8d26d", font=("Verdana", 9, "bold")).pack()
+        Label(item_frame, text=nome, bg="#f8d26d", font=("Verdana", 8, "bold")).pack()  # Reduzi a fonte
                 
         # Botão de compra
         if comando:
@@ -239,22 +239,22 @@ def criar_tela_jogo():
                 # Para o Doce Raro, usar o preço atual baseado no dano_atual
                 if dano_atual < len(valor_doce):
                     preco_atual = valor_doce[dano_atual]
-                    doce_rarro_button = Button(item_frame, text=f"R${preco_atual}", bg=cor, font=("Verdana", 8), 
-                           command=comprarDoceRaro, width=8)
+                    doce_rarro_button = Button(item_frame, text=f"R${preco_atual}", bg=cor, font=("Verdana", 7), 
+                           command=comprarDoceRaro, width=7)  # Reduzi a fonte e largura
                 else:
-                    doce_rarro_button = Button(item_frame, text="MAX", bg=cor, font=("Verdana", 8), 
-                           state="disabled", width=8)
+                    doce_rarro_button = Button(item_frame, text="MAX", bg=cor, font=("Verdana", 7), 
+                           state="disabled", width=7)
                 doce_rarro_button.pack()
                 
             elif nome == "Mega Bracelete":
                 # Mega Bracelete começa desabilitado
-                mega_bracelete_button = Button(item_frame, text="R$1000", bg=cor, font=("Verdana", 8), 
-                       command=comprarMegaBracelete, width=8, state="disabled")
+                mega_bracelete_button = Button(item_frame, text="R$1000", bg=cor, font=("Verdana", 7), 
+                       command=comprarMegaBracelete, width=7, state="disabled")  # Reduzi a fonte e largura
                 mega_bracelete_button.pack()
                 
             else:
-                Button(item_frame, text=f"R${preco}", bg=cor, font=("Verdana", 8), 
-                       command=comando, width=8).pack()
+                Button(item_frame, text=f"R${preco}", bg=cor, font=("Verdana", 7), 
+                       command=comando, width=7).pack()  # Reduzi a fonte e largura
 
     criar_item("Doce Raro", 200, "lightgreen", comprarDoceRaro, 0)
     criar_item("Rede", 2000, "lightgreen", lambda: print("Comprou Rede"), 1)
@@ -262,12 +262,12 @@ def criar_tela_jogo():
     criar_item("Mega Bracelete", "0,99", "lightblue", comprarMegaBracelete, 3)
 
     # ======== BOTÃO AJUDA ========
-    ajuda_frame = Frame(itens_container, bg="#f8d26d", width=120, height=70)
-    ajuda_frame.pack(side=LEFT, padx=15)
+    ajuda_frame = Frame(itens_container, bg="#f8d26d", width=110, height=60)  # Reduzi o tamanho
+    ajuda_frame.pack(side=LEFT, padx=12)  # Reduzi o padding
     ajuda_frame.pack_propagate(False)
     
-    Button(ajuda_frame, text="AJUDA", bg="lightblue", font=("Verdana", 10, "bold"),
-           command=mostrar_ajuda, width=10, height=2).pack(expand=True)
+    Button(ajuda_frame, text="AJUDA", bg="lightblue", font=("Verdana", 9, "bold"),  # Reduzi a fonte
+           command=mostrar_ajuda, width=8, height=1).pack(expand=True)  # Reduzi a altura
 
     def mostrar_ajuda():
         ajuda = Toplevel(jogo_window)
