@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import messagebox
 import os
 import random
+import threading
+import time
 
 def criar_tela_jogo():
     jogo_window = Tk()
@@ -74,6 +76,12 @@ def criar_tela_jogo():
     mega_bracelete_comprado = False
     mega_bracelete_disponivel = False
     
+    # ======== VARIÁVEIS DOS COCOS ========
+    cocos = 0
+    max_cocos = 30
+    valor_coco = 400
+    dano_automatico_ativado = False
+    
     # ======== IMAGEM DO INIMIGO (CENTRO) ========
     inimigo_label = Label(jogo_window, bg="#ffffff", cursor="hand2")
     inimigo_label.place(x=400, y=300, anchor="center")
@@ -144,6 +152,76 @@ def criar_tela_jogo():
     inimigo_label.bind("<Button-1>", lambda e: atacar_inimigo())
     carregar_imagem_inimigo()
 
+    # ======== SISTEMA DE COCOS ========
+    def comprar_coco():
+        nonlocal dinheiro, cocos, valor_coco, dano_automatico_ativado
+        
+        if cocos >= max_cocos:
+            messagebox.showinfo("Limite Atingido", f"Você já tem o máximo de {max_cocos} cocos!")
+            return
+            
+        if dinheiro >= valor_coco:
+            dinheiro -= valor_coco
+            cocos += 1
+            valor_coco = int(valor_coco * 1.25)  # Aumenta 25% a cada compra
+            
+            # Atualizar displays
+            dinheiro_label.config(text=f"R$ {dinheiro}")
+            cocos_label.config(text=f"COCOS: {cocos}/{max_cocos}")
+            coco_button.config(text=f"R${valor_coco}")
+            
+            print(f"Coco comprado! Total: {cocos}. Próximo coco custa: R${valor_coco}")
+            
+            # Ativar dano automático se for o primeiro coco
+            if not dano_automatico_ativado and cocos > 0:
+                dano_automatico_ativado = True
+                iniciar_dano_automatico()
+        else:
+            print("Dinheiro insuficiente para comprar coco!")
+
+    def iniciar_dano_automatico():
+        def dano_automatico_loop():
+            while dano_automatico_ativado and cocos > 0:
+                time.sleep(5)  # Espera 5 segundos
+                if cocos > 0:
+                    # Executa o dano automático na thread principal
+                    jogo_window.after(0, aplicar_dano_automatico)
+        
+        # Inicia a thread do dano automático
+        thread = threading.Thread(target=dano_automatico_loop, daemon=True)
+        thread.start()
+
+    def aplicar_dano_automatico():
+        if cocos > 0 and dano_automatico_ativado:
+            dano_total = cocos  # 1 de dano por coco
+            inimigos[inimigo_atual]["vida_atual"] -= dano_total
+            
+            vida_atual = inimigos[inimigo_atual]["vida_atual"]
+            vida_max = inimigos[inimigo_atual]["vida_max"]
+            
+            nova_largura = max(0, (vida_atual / vida_max) * 300)
+            vida_canvas.coords(vida_barra, 0, 0, nova_largura, 20)
+            
+            if vida_atual > vida_max * 0.5:
+                vida_canvas.itemconfig(vida_barra, fill="green")
+            elif vida_atual > vida_max * 0.2:
+                vida_canvas.itemconfig(vida_barra, fill="yellow")
+            else:
+                vida_canvas.itemconfig(vida_barra, fill="red")
+            
+            print(f"Dano automático! {cocos} cocos causaram {dano_total} de dano. Vida do inimigo: {vida_atual}")
+            
+            if vida_atual <= 0:
+                dinheiro_min = inimigos[inimigo_atual]["dinheiro_min"]
+                dinheiro_max = inimigos[inimigo_atual]["dinheiro_max"]
+                dinheiro_ganho = random.randint(dinheiro_min, dinheiro_max)
+                
+                nonlocal dinheiro
+                dinheiro += dinheiro_ganho
+                dinheiro_label.config(text=f"R$ {dinheiro}")
+                print(f"{inimigos[inimigo_atual]['nome']} derrotado pelo dano automático! +R${dinheiro_ganho}")
+                trocar_inimigo()
+
     # ======== INFORMAÇÕES (LADO DIREITO) ========
     info_bg = Frame(jogo_window, bg="#f0f0f0", relief="solid", bd=1, width=150, height=200)
     info_bg.place(x=620, y=100)
@@ -157,6 +235,8 @@ def criar_tela_jogo():
     dano_label.pack(pady=5)
     inimigo_info_label = Label(info_bg, text="INIMIGO: 1/3", font=("Verdana", 9), bg="#f0f0f0")
     inimigo_info_label.pack(pady=5)
+    cocos_label = Label(info_bg, text="COCOS: 0/30", font=("Verdana", 9), bg="#f0f0f0")
+    cocos_label.pack(pady=5)
 
     # ======== SQUIRTLE (DIREITA, ACIMA DA LOJA) ========
     try:
@@ -182,6 +262,7 @@ def criar_tela_jogo():
     # Variáveis para os botões
     doce_rarro_button = None
     mega_bracelete_button = None
+    coco_button = None
     
     def comprarDoceRaro():
         nonlocal dinheiro, dano_atual
@@ -220,7 +301,7 @@ def criar_tela_jogo():
         else:
             print("Mega Bracelete não disponível, dinheiro insuficiente ou já comprado")
 
-    # ======== FUNÇÃO MOSTRAR AJUDA (AGORA DEFINIDA ANTES DO BOTÃO) ========
+    # ======== FUNÇÃO MOSTRAR AJUDA ========
     def mostrar_ajuda():
         ajuda = Toplevel(jogo_window)
         ajuda.title("Ajuda - Beach Defender")
@@ -239,6 +320,8 @@ Poções:
 
 Sistema de Upgrades:
 - Doce Raro: Compre 3 vezes para aumentar dano (5→10→20)
+- Coco: Causa 1 de dano automático a cada 5 segundos por coco
+  (Máximo: 30 cocos, preço aumenta 25% a cada compra)
 - Mega Bracelete: Desbloqueado após comprar 3 Doces Raros
   e derrotar Gyarados (15% de chance)
 - Mega Bracelete custa R$1000 e aumenta dano para 35
@@ -256,7 +339,7 @@ Recompensas:
         Button(ajuda, text="Fechar", command=ajuda.destroy).pack(pady=10)
 
     def criar_item(nome, preco, cor, comando, x_offset):
-        nonlocal doce_rarro_button, mega_bracelete_button
+        nonlocal doce_rarro_button, mega_bracelete_button, coco_button
         
         item_frame = Frame(itens_container, bg="#f8d26d", width=110, height=100)
         item_frame.pack(side=LEFT, padx=12)
@@ -287,13 +370,19 @@ Recompensas:
                        command=comprarMegaBracelete, width=7, state="disabled")
                 mega_bracelete_button.pack()
                 
+            elif nome == "Coco":
+                # Coco com preço dinâmico
+                coco_button = Button(item_frame, text=f"R${valor_coco}", bg=cor, font=("Verdana", 7), 
+                       command=comprar_coco, width=7)
+                coco_button.pack()
+                
             else:
                 Button(item_frame, text=f"R${preco}", bg=cor, font=("Verdana", 7), 
                        command=comando, width=7).pack()
 
     criar_item("Doce Raro", 200, "lightgreen", comprarDoceRaro, 0)
     criar_item("Rede", 2000, "lightgreen", lambda: print("Comprou Rede"), 1)
-    criar_item("Coco", 400, "lightgreen", lambda: print("Comprou Coco"), 2)
+    criar_item("Coco", 400, "lightgreen", comprar_coco, 2)
     criar_item("Mega Bracelete", "0,99", "lightblue", comprarMegaBracelete, 3)
 
     # ======== BOTÃO AJUDA ========
