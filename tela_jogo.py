@@ -69,6 +69,9 @@ def criar_tela_jogo():
     inimigo_atual = 0
     dano_jogador = [5,10,20,35,60]
     dinheiro = 0
+    coco_ativo = False
+    cocos_comprados = 0
+
     dano_atual = 0
     valor_doce = [100,200,300]  # Só 3 níveis para Doce Raro
     mega_bracelete_comprado = False
@@ -155,6 +158,8 @@ def criar_tela_jogo():
     dinheiro_label.pack(pady=5)
     dano_label = Label(info_bg, text=f"DANO: {dano_jogador[dano_atual]}", font=("Verdana", 9), bg="#f0f0f0")
     dano_label.pack(pady=5)
+    coco_label = Label(info_bg, text="COCOS: 0/30", font=("Verdana", 9), bg="#f0f0f0")
+    coco_label.pack(pady=2)
     inimigo_info_label = Label(info_bg, text="INIMIGO: 1/3", font=("Verdana", 9), bg="#f0f0f0")
     inimigo_info_label.pack(pady=5)
 
@@ -182,6 +187,52 @@ def criar_tela_jogo():
     # Variáveis para os botões
     doce_rarro_button = None
     mega_bracelete_button = None
+    def dano_coco_periodico():
+        if coco_ativo:
+            inimigos[inimigo_atual]["vida_atual"] -= cocos_comprados*5
+
+
+            vida_atual = inimigos[inimigo_atual]["vida_atual"]
+            vida_max = inimigos[inimigo_atual]["vida_max"]
+            nova_largura = max(0, (vida_atual / vida_max) * 300)
+            vida_canvas.coords(vida_barra, 0, 0, nova_largura, 20)
+
+            if vida_atual > vida_max * 0.5:
+                vida_canvas.itemconfig(vida_barra, fill="green")
+            elif vida_atual > vida_max * 0.2:
+                vida_canvas.itemconfig(vida_barra, fill="yellow")
+            else:
+                vida_canvas.itemconfig(vida_barra, fill="red")
+
+            if vida_atual <= 0:
+                dinheiro_ganho = random.randint(inimigos[inimigo_atual]["dinheiro_min"], inimigos[inimigo_atual]["dinheiro_max"])
+                nonlocal dinheiro
+                dinheiro += dinheiro_ganho
+                dinheiro_label.config(text=f"R$ {dinheiro}")
+                trocar_inimigo()
+
+        jogo_window.after(5000, dano_coco_periodico)  # Continua repetindo
+
+    def comprarCoco():
+        nonlocal dinheiro, cocos_comprados, coco_ativo
+
+        if cocos_comprados >= 30:
+            print("⚠️ Limite de 30 cocos atingido!")
+            return
+
+        if dinheiro >= 400:
+            dinheiro -= 400
+            cocos_comprados += 1
+            coco_ativo = True
+            dinheiro_label.config(text=f"R$ {dinheiro}")
+
+            # ✅ Atualiza contador na tela
+            coco_label.config(text=f"Cocos: {cocos_comprados}/30")
+
+            print(f"🥥 Coco comprado! Total: {cocos_comprados}")
+        else:
+            print("Dinheiro insuficiente!")
+
     
     def comprarDoceRaro():
         nonlocal dinheiro, dano_atual
@@ -293,7 +344,7 @@ Recompensas:
 
     criar_item("Doce Raro", 200, "lightgreen", comprarDoceRaro, 0)
     criar_item("Rede", 2000, "lightgreen", lambda: print("Comprou Rede"), 1)
-    criar_item("Coco", 400, "lightgreen", lambda: print("Comprou Coco"), 2)
+    criar_item("Coco", 400, "lightgreen", lambda: comprarCoco(), 2)
     criar_item("Mega Bracelete", "0,99", "lightblue", comprarMegaBracelete, 3)
 
     # ======== BOTÃO AJUDA ========
@@ -303,5 +354,5 @@ Recompensas:
     
     Button(ajuda_frame, text="AJUDA", bg="lightblue", font=("Verdana", 9, "bold"),
            command=mostrar_ajuda, width=8, height=1).pack(expand=True)
-    
+    dano_coco_periodico()
     jogo_window.mainloop()
