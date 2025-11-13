@@ -196,7 +196,6 @@ def criar_tela_jogo():
                 pocao_sorte_ativa = False
                 tempo_sorte_label.config(text="Tempo: 00:00")
                 botao_sorte.config(bg="#ccffcc")
-                print("🔮 Poção Sorte expirou!")
             else:
                 tempo_sorte_label.config(text=f"Tempo: {formatar_tempo(tempo_sorte_restante)}")
         
@@ -207,7 +206,6 @@ def criar_tela_jogo():
                 pocao_forca_ativa = False
                 tempo_forca_label.config(text="Tempo: 00:00")
                 botao_forca.config(bg="#ffcccc")
-                print("💪 Poção Força expirou!")
             else:
                 tempo_forca_label.config(text=f"Tempo: {formatar_tempo(tempo_forca_restante)}")
         
@@ -218,7 +216,6 @@ def criar_tela_jogo():
                 pocao_fortuna_ativa = False
                 tempo_fortuna_label.config(text="Tempo: 00:00")
                 botao_fortuna.config(bg="#ccffff")
-                print("💰 Poção Fortuna expirou!")
             else:
                 tempo_fortuna_label.config(text=f"Tempo: {formatar_tempo(tempo_fortuna_restante)}")
         
@@ -241,9 +238,7 @@ def criar_tela_jogo():
             botao_sorte.config(bg="#aaffaa")
             tempo_sorte_label.config(text=f"Tempo: {formatar_tempo(tempo_sorte_restante)}")
             
-            print(f"🔮 Poção Sorte comprada! +60 segundos. Total: {formatar_tempo(tempo_sorte_restante)}")
-        else:
-            print("Dinheiro insuficiente!")
+
 
     def comprar_pocao_forca():
         nonlocal dinheiro, pocao_forca_ativa, tempo_forca_restante
@@ -261,9 +256,7 @@ def criar_tela_jogo():
             botao_forca.config(bg="#ffaaaa")
             tempo_forca_label.config(text=f"Tempo: {formatar_tempo(tempo_forca_restante)}")
             
-            print(f"💪 Poção Força comprada! +45 segundos. Total: {formatar_tempo(tempo_forca_restante)}")
-        else:
-            print("Dinheiro insuficiente!")
+
 
     def comprar_pocao_fortuna():
         nonlocal dinheiro, pocao_fortuna_ativa, tempo_fortuna_restante
@@ -280,10 +273,7 @@ def criar_tela_jogo():
             # Muda cor do botão para indicar ativo
             botao_fortuna.config(bg="#aaffff")
             tempo_fortuna_label.config(text=f"Tempo: {formatar_tempo(tempo_fortuna_restante)}")
-            
-            print(f"💰 Poção Fortuna comprada! +90 segundos. Total: {formatar_tempo(tempo_fortuna_restante)}")
-        else:
-            print("Dinheiro insuficiente!")
+
 
     def criar_pocao(nome, bonus, preco, cor, y_pos, comando):
         # Frame da poção com borda e fundo - TAMANHO ORIGINAL
