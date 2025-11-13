@@ -72,13 +72,11 @@ def criar_tela_jogo():
                 if random.random() <= 0.15:
                     mega_bracelete_disponivel = True
                     mega_bracelete_button.config(state="normal")
-                    print("🎉 Mega Bracelete disponível para compra!")
         
         inimigos[inimigo_atual]["vida_atual"] = inimigos[inimigo_atual]["vida_max"]
         adversario_label.config(text=inimigos[inimigo_atual]["nome"])
         inimigo_info_label.config(text=f"INIMIGO: {inimigo_atual + 1}/3")
         carregar_imagem_inimigo()
-        print(f"Novo inimigo: {inimigos[inimigo_atual]['nome']}")
 
     def carregar_imagem_inimigo():
         try:
@@ -89,7 +87,6 @@ def criar_tela_jogo():
             inimigo_label.config(image=inimigo_img)
             inimigo_label.image = inimigo_img
         except Exception as e:
-            print(f"Erro ao carregar imagem: {e}")
             inimigo_label.config(text="[CLIQUE AQUI PARA ATACAR]", font=("Verdana", 10))
     
     def calcular_dano_com_critico(dano_base):
@@ -100,7 +97,6 @@ def criar_tela_jogo():
         
         if random.random() <= chance_critico:
             dano_final = dano_base * 2
-            print(f"🎯 ACERTO CRÍTICO! Dano: {dano_final}")
             return dano_final
         return dano_base
     
@@ -140,7 +136,6 @@ def criar_tela_jogo():
         else:
             vida_canvas.itemconfig(vida_barra, fill="red")
         
-        print(f"Atacou! Dano: {dano_causado}, Vida do {inimigos[inimigo_atual]['nome']}: {vida_atual}")
         
         if vida_atual <= 0:
             dinheiro_min = inimigos[inimigo_atual]["dinheiro_min"]
@@ -151,7 +146,6 @@ def criar_tela_jogo():
             dinheiro_ganho = calcular_dinheiro_ganho(dinheiro_ganho_base)
             dinheiro += dinheiro_ganho
             dinheiro_label.config(text=f"R$ {dinheiro}")
-            print(f"{inimigos[inimigo_atual]['nome']} derrotado! +R${dinheiro_ganho}")
             trocar_inimigo()
 
     inimigo_label.bind("<Button-1>", lambda e: atacar_inimigo())
@@ -394,10 +388,7 @@ def criar_tela_jogo():
                 nonlocal dinheiro
                 dinheiro += dinheiro_ganho
                 dinheiro_label.config(text=f"R$ {dinheiro}")
-                print(f"🥥 Dano do coco: {dano_causado}, {inimigos[inimigo_atual]['nome']} derrotado! +R${dinheiro_ganho}")
                 trocar_inimigo()
-            else:
-                print(f"🥥 Dano automático do coco: {dano_causado}, Vida restante: {vida_atual}")
 
         jogo_window.after(5000, dano_coco_periodico)
 
@@ -407,7 +398,6 @@ def criar_tela_jogo():
         preco_coco = 400 + (cocos_comprados * 150)
 
         if cocos_comprados >= 30:
-            print("⚠️ Limite de 30 cocos atingido!")
             return
 
         if dinheiro >= preco_coco:
@@ -423,9 +413,6 @@ def criar_tela_jogo():
             else:
                 coco_button.config(text="MAX", state="disabled")
 
-            print(f"🥥 Coco comprado! Preço: R${preco_coco}, Total: {cocos_comprados}")
-        else:
-            print("Dinheiro insuficiente!")
     
     def comprarDoceRaro():
         nonlocal dinheiro, dano_atual
@@ -439,12 +426,8 @@ def criar_tela_jogo():
             
             if dano_atual < len(valor_doce):
                 doce_rarro_button.config(text=f"R${valor_doce[dano_atual]}")
-                print(f"Doce Raro comprado! Dano aumentou para {dano_jogador[dano_atual]}")
             else:
                 doce_rarro_button.config(text="MAX", state="disabled")
-                print("Doce Raro máximo alcançado! Derrote Gyarados para chance de Mega Bracelete")
-        else:
-            print("Dinheiro insuficiente ou upgrade máximo alcançado")
     
     def comprarRede():
         nonlocal dinheiro
@@ -470,12 +453,7 @@ def criar_tela_jogo():
                 
                 dinheiro += dinheiro_ganho
                 dinheiro_label.config(text=f"R$ {dinheiro}")
-                print(f"🎣 Rede usada! Dano: {dano_causado}, {inimigos[inimigo_atual]['nome']} derrotado! +R${dinheiro_ganho}")
                 trocar_inimigo()
-            else:
-                print(f"🎣 Rede usada! Dano: {dano_causado}, Vida restante: {vida_atual}")
-        else:
-            print("Dinheiro insuficiente para comprar a Rede!")
             
     def comprarMegaBracelete():
         nonlocal dinheiro, dano_atual, mega_bracelete_comprado
@@ -489,9 +467,6 @@ def criar_tela_jogo():
             dano_label.config(text=f"DANO: {dano_jogador[dano_atual]}")
             mega_bracelete_button.config(text="COMPRADO", state="disabled")
             
-            print("🎉 Mega Bracelete comprado! Dano máximo alcançado: 35")
-        else:
-            print("Mega Bracelete não disponível, dinheiro insuficiente ou já comprado")
 
     def mostrar_ajuda():
         ajuda = Toplevel(jogo_window)
