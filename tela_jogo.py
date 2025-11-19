@@ -120,7 +120,6 @@ def criar_tela_jogo():
     def atacar_inimigo():
         nonlocal dinheiro
         
-        # ✅ Calcula dano com efeitos de poções
         dano_causado = calcular_dano_final(dano_jogador[dano_atual])
         inimigos[inimigo_atual]["vida_atual"] -= dano_causado
         vida_atual = inimigos[inimigo_atual]["vida_atual"]
@@ -142,11 +141,23 @@ def criar_tela_jogo():
             dinheiro_max = inimigos[inimigo_atual]["dinheiro_max"]
             dinheiro_ganho_base = random.randint(dinheiro_min, dinheiro_max)
             
-            # ✅ Aplica efeito da poção fortuna no dinheiro ganho
             dinheiro_ganho = calcular_dinheiro_ganho(dinheiro_ganho_base)
             dinheiro += dinheiro_ganho
             dinheiro_label.config(text=f"R$ {dinheiro}")
             trocar_inimigo()
+            vida_atual = inimigos[inimigo_atual]["vida_atual"]
+            vida_max = inimigos[inimigo_atual]["vida_max"]
+            
+            nova_largura = max(0, (vida_atual / vida_max) * 300)
+            vida_canvas.coords(vida_barra, 0, 0, nova_largura, 20)
+            
+            if vida_atual > vida_max * 0.5:
+                vida_canvas.itemconfig(vida_barra, fill="green")
+            elif vida_atual > vida_max * 0.2:
+                vida_canvas.itemconfig(vida_barra, fill="yellow")
+            else:
+                vida_canvas.itemconfig(vida_barra, fill="red")            
+
 
     inimigo_label.bind("<Button-1>", lambda e: atacar_inimigo())
     carregar_imagem_inimigo()
