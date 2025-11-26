@@ -90,10 +90,9 @@ def criar_tela_jogo():
             inimigo_label.config(text="[CLIQUE AQUI PARA ATACAR]", font=("Verdana", 10))
     
     def calcular_dano_com_critico(dano_base):
-        """Calcula o dano com chance de crítico (base 15% + poção sorte)"""
         chance_critico = chance_critico_base
         if pocao_sorte_ativa:
-            chance_critico *= 2  # Poção Sorte dobra a chance crítica
+            chance_critico *= 2
         
         if random.random() <= chance_critico:
             dano_final = dano_base * 2
@@ -101,19 +100,17 @@ def criar_tela_jogo():
         return dano_base
     
     def calcular_dano_final(dano_base):
-        """Calcula o dano final com efeitos de poções"""
         dano_com_critico = calcular_dano_com_critico(dano_base)
         
         if pocao_forca_ativa:
-            dano_final = dano_com_critico * 2  # Poção Força dobra o dano
+            dano_final = dano_com_critico * 2
             return dano_final
         
         return dano_com_critico
     
     def calcular_dinheiro_ganho(dinheiro_base):
-        """Calcula o dinheiro ganho com efeito da poção fortuna"""
         if pocao_fortuna_ativa:
-            dinheiro_final = dinheiro_base * 2  # Poção Fortuna dobra o dinheiro
+            dinheiro_final = dinheiro_base * 2
             return dinheiro_final
         return dinheiro_base
 
@@ -181,7 +178,6 @@ def criar_tela_jogo():
     # ======== POÇÕES (LADO ESQUERDO - TAMANHOS ORIGINAIS) ========
     Label(jogo_window, text="POÇÕES", font=("Verdana", 14, "bold"), bg="#f0f0f0", relief="solid", bd=1).place(x=50, y=100, width=180, height=30)
 
-    # Variáveis para os elementos das poções
     tempo_sorte_label = None
     tempo_forca_label = None
     tempo_fortuna_label = None
@@ -190,17 +186,14 @@ def criar_tela_jogo():
     botao_fortuna = None
 
     def formatar_tempo(segundos):
-        """Formata segundos para MM:SS"""
         minutos = segundos // 60
         segundos = segundos % 60
         return f"{minutos:02d}:{segundos:02d}"
 
     def atualizar_temporizadores():
-        """Atualiza todos os temporizadores das poções"""
         nonlocal tempo_sorte_restante, tempo_forca_restante, tempo_fortuna_restante
         nonlocal pocao_sorte_ativa, pocao_forca_ativa, pocao_fortuna_ativa
         
-        # Atualiza Poção Sorte
         if pocao_sorte_ativa:
             tempo_sorte_restante -= 1
             if tempo_sorte_restante <= 0:
@@ -210,7 +203,6 @@ def criar_tela_jogo():
             else:
                 tempo_sorte_label.config(text=f"Tempo: {formatar_tempo(tempo_sorte_restante)}")
         
-        # Atualiza Poção Força
         if pocao_forca_ativa:
             tempo_forca_restante -= 1
             if tempo_forca_restante <= 0:
@@ -220,7 +212,6 @@ def criar_tela_jogo():
             else:
                 tempo_forca_label.config(text=f"Tempo: {formatar_tempo(tempo_forca_restante)}")
         
-        # Atualiza Poção Fortuna
         if pocao_fortuna_ativa:
             tempo_fortuna_restante -= 1
             if tempo_fortuna_restante <= 0:
@@ -230,7 +221,6 @@ def criar_tela_jogo():
             else:
                 tempo_fortuna_label.config(text=f"Tempo: {formatar_tempo(tempo_fortuna_restante)}")
         
-        # Agenda próxima atualização
         jogo_window.after(1000, atualizar_temporizadores)
 
     def comprar_pocao_sorte():
@@ -241,15 +231,11 @@ def criar_tela_jogo():
             dinheiro -= preco
             dinheiro_label.config(text=f"R$ {dinheiro}")
             
-            # ✅ ACUMULA TEMPO - Adiciona 60 segundos (pode comprar várias)
             tempo_sorte_restante += 60
             pocao_sorte_ativa = True
             
-            # Muda cor do botão para indicar ativo
             botao_sorte.config(bg="#aaffaa")
             tempo_sorte_label.config(text=f"Tempo: {formatar_tempo(tempo_sorte_restante)}")
-            
-
 
     def comprar_pocao_forca():
         nonlocal dinheiro, pocao_forca_ativa, tempo_forca_restante
@@ -259,15 +245,11 @@ def criar_tela_jogo():
             dinheiro -= preco
             dinheiro_label.config(text=f"R$ {dinheiro}")
             
-            # ✅ ACUMULA TEMPO - Adiciona 45 segundos (pode comprar várias)
             tempo_forca_restante += 45
             pocao_forca_ativa = True
             
-            # Muda cor do botão para indicar ativo
             botao_forca.config(bg="#ffaaaa")
             tempo_forca_label.config(text=f"Tempo: {formatar_tempo(tempo_forca_restante)}")
-            
-
 
     def comprar_pocao_fortuna():
         nonlocal dinheiro, pocao_fortuna_ativa, tempo_fortuna_restante
@@ -277,43 +259,33 @@ def criar_tela_jogo():
             dinheiro -= preco
             dinheiro_label.config(text=f"R$ {dinheiro}")
             
-            # ✅ ACUMULA TEMPO - Adiciona 90 segundos (pode comprar várias)
             tempo_fortuna_restante += 90
             pocao_fortuna_ativa = True
             
-            # Muda cor do botão para indicar ativo
             botao_fortuna.config(bg="#aaffff")
             tempo_fortuna_label.config(text=f"Tempo: {formatar_tempo(tempo_fortuna_restante)}")
 
-
     def criar_pocao(nome, bonus, preco, cor, y_pos, comando):
-        # Frame da poção com borda e fundo - TAMANHO ORIGINAL
         pocao_frame = Frame(jogo_window, bg=cor, relief="raised", bd=2, width=180, height=80)
         pocao_frame.place(x=50, y=y_pos)
         pocao_frame.pack_propagate(False)
         
-        # Nome da poção
         Label(pocao_frame, text=nome, font=("Verdana", 10, "bold"), bg=cor).pack(pady=(5, 0))
         
-        # Bônus
         Label(pocao_frame, text=bonus, bg=cor, font=("Verdana", 8)).pack()
         
-        # Linha do botão e tempo
         linha_frame = Frame(pocao_frame, bg=cor)
         linha_frame.pack(fill=X, pady=5)
         
-        # Botão de compra - TAMANHO ORIGINAL (width=6)
         nonlocal botao_sorte, botao_forca, botao_fortuna
         botao = Button(linha_frame, text=f"R${preco}", font=("Verdana", 9, "bold"),
                bg="#ccffcc" if "Sorte" in nome else "#ffcccc" if "Força" in nome else "#ccffff",
-               command=comando, width=6)  # ✅ TAMANHO ORIGINAL: width=6
+               command=comando, width=6)
         botao.pack(side=LEFT, padx=10)
         
-        # Label do tempo - TAMANHO ORIGINAL
         tempo_label = Label(linha_frame, text="Tempo: 00:00", bg=cor, font=("Verdana", 8))
         tempo_label.pack(side=RIGHT, padx=10)
         
-        # Guardar referências
         if "Sorte" in nome:
             nonlocal tempo_sorte_label
             tempo_sorte_label = tempo_label
@@ -329,7 +301,6 @@ def criar_tela_jogo():
             
         return botao, tempo_label
 
-    # Criar poções funcionais - POSIÇÕES ORIGINAIS
     criar_pocao("Poção Sorte", "+2x Chance Crítica", 200, "#e8f4fd", 140, comprar_pocao_sorte)
     criar_pocao("Poção Força", "+2x Dano", 500, "#fde8e8", 230, comprar_pocao_forca)
     criar_pocao("Poção Fortuna", "+2x Dinheiro", 300, "#e8fde8", 320, comprar_pocao_fortuna)
@@ -351,18 +322,15 @@ def criar_tela_jogo():
 
     Label(loja_bg, text="LOJA", font=("Verdana", 14, "bold"), bg="#f8d26d").pack(pady=3)
 
-    # Container para os itens da loja
     itens_container = Frame(loja_bg, bg="#f8d26d")
     itens_container.pack(expand=True)
     
-    # Variáveis para os botões
     doce_rarro_button = None
     mega_bracelete_button = None
     coco_button = None
     
     def dano_coco_periodico():
         if coco_ativo and cocos_comprados > 0:
-            # ✅ Calcula dano do coco com efeitos de poções
             dano_base_coco = cocos_comprados * 5
             dano_causado = calcular_dano_final(dano_base_coco)
             
@@ -437,7 +405,6 @@ def criar_tela_jogo():
             dinheiro -= 2000
             dinheiro_label.config(text=f"R$ {dinheiro}")
 
-            # ✅ Causa 300 de dano com efeitos de poções
             dano_causado = calcular_dano_final(300)
             inimigos[inimigo_atual]["vida_atual"] -= dano_causado
             vida_atual = inimigos[inimigo_atual]["vida_atual"]
@@ -502,14 +469,33 @@ Objetivo:
         Label(ajuda, text=texto, justify=LEFT, font=("Verdana", 9), padx=10, pady=10).pack()
         Button(ajuda, text="Fechar", command=ajuda.destroy).pack(pady=10)
 
-    def criar_item(nome, preco, cor, comando, x_offset):
+    def carregar_imagem_item(caminho, subsample_x=4, subsample_y=4):
+        try:
+            img = PhotoImage(file=caminho)
+            img = img.subsample(subsample_x, subsample_y)
+            return img
+        except Exception as e:
+            print(f"Erro ao carregar imagem {caminho}: {e}")
+            return None
+
+    def criar_item(nome, preco, cor, comando, x_offset, imagem_path=None):
         nonlocal doce_rarro_button, mega_bracelete_button, coco_button
         
         item_frame = Frame(itens_container, bg="#f8d26d", width=110, height=100)
         item_frame.pack(side=LEFT, padx=12)
         item_frame.pack_propagate(False)
         
-        Label(item_frame, text=f"[{nome.upper()}]", bg="#f8d26d", font=("Verdana", 7)).pack(pady=1)
+        if imagem_path and os.path.exists(imagem_path):
+            img = carregar_imagem_item(imagem_path)
+            if img:
+                item_label = Label(item_frame, image=img, bg="#f8d26d")
+                item_label.image = img
+                item_label.pack(pady=2)
+            else:
+                Label(item_frame, text=f"[{nome.upper()}]", bg="#f8d26d", font=("Verdana", 7)).pack(pady=1)
+        else:
+            Label(item_frame, text=f"[{nome.upper()}]", bg="#f8d26d", font=("Verdana", 7)).pack(pady=1)
+        
         Label(item_frame, text=nome, bg="#f8d26d", font=("Verdana", 8, "bold")).pack()
                 
         if comando:
@@ -538,10 +524,10 @@ Objetivo:
                 Button(item_frame, text=f"R${preco}", bg=cor, font=("Verdana", 7), 
                        command=comando, width=7).pack()
 
-    criar_item("Doce Raro", 200, "lightgreen", comprarDoceRaro, 0)
-    criar_item("Rede", 2000, "lightgreen", comprarRede, 1)
-    criar_item("Coco", 400, "lightgreen", comprarCoco, 2)
-    criar_item("Mega Bracelete", "0,99", "lightblue", comprarMegaBracelete, 3)
+    criar_item("Doce Raro", 200, "lightgreen", comprarDoceRaro, 0, "imgs/Candy.png")
+    criar_item("Rede", 2000, "lightgreen", comprarRede, 1, "imgs/Rede.png")
+    criar_item("Coco", 400, "lightgreen", comprarCoco, 2, "imgs/coco.png")
+    criar_item("Mega Bracelete", "0,99", "lightblue", comprarMegaBracelete, 3, "imgs/Mega.png")
 
     # ======== BOTÃO AJUDA ========
     ajuda_frame = Frame(itens_container, bg="#f8d26d", width=110, height=60)
@@ -553,9 +539,8 @@ Objetivo:
     
     # ======== INICIAR SISTEMAS ========
     dano_coco_periodico()
-    atualizar_temporizadores()  # Inicia o sistema de temporizadores das poções
+    atualizar_temporizadores()
     jogo_window.mainloop()
 
-# Executar o jogo
 if __name__ == "__main__":
     criar_tela_jogo()
